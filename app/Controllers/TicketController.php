@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
 
-class Ticket extends ResourceController
+class TicketController extends ResourceController
 {
     /**
      * Return an array of resource objects, themselves in array format
