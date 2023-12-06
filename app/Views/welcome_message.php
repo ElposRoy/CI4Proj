@@ -209,18 +209,18 @@
                 <button onclick="toggleMenu();">&#9776;</button>
             </li>
             <li class="menu-item hidden"><a href="#">Home</a></li>
-            <li class="menu-item hidden"><a href="https://codeigniter4.github.io/userguide/" target="_blank">Docs</a>
-            </li>
-            <li class="menu-item hidden"><a href="https://forum.codeigniter.com/" target="_blank">Community</a></li>
-            <li class="menu-item hidden"><a
-                    href="https://github.com/codeigniter4/CodeIgniter4/blob/develop/CONTRIBUTING.md" target="_blank">Contribute</a>
-            </li>
+            <?php if (auth()->loggedIn()) : ?>
+                    <li class="menu-item"><a href="logout">Logout</a></li>
+                <?php else : ?>
+                    <li class="menu-item"><a href="login">Login</a></li>
+                    <li class="menu-item"><a href="register">Register</a></li>
+                <?php endif; ?>
         </ul>
     </div>
 
     <div class="heroe">
 
-        <h1>Welcome to CodeIgniter <?= CodeIgniter\CodeIgniter::CI_VERSION ?></h1>
+    <h1>Welcome <?= auth()->user()->username ?? 'to CodeIgniter' ?> </h1>
 
         <h2>The small framework with powerful features</h2>
 
