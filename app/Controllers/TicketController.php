@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
-
+use CodeIgniter\Http\Response;
 class TicketController extends ResourceController
 {
     /**
@@ -23,17 +23,17 @@ class TicketController extends ResourceController
      */
     public function show($id = null)
     {
-        //
-    }
-
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function new()
-    {
-        //
+        $ticketModel = new \App\Models\Ticket();
+        $data = $ticketModel->find($id);
+        if (!$data){
+            $response = array(
+                'status' => 'error',
+                'message' => 'Data cannot be found'
+            );
+            return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+            // return $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
+        }
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($data);
     }
 
     /**
@@ -43,7 +43,28 @@ class TicketController extends ResourceController
      */
     public function create()
     {
-        //
+      $ticketModel = new \App\Models\Ticket();
+      $data = $this->request->getPost();
+
+      if(!$ticketModel -> validate($data)){
+        $response = array(
+            'status' => 'error',
+            'message' => $ticketModel->errors()
+        );
+
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+
+      }
+
+      $ticketModel->insert($data);
+      $response = array(
+        'status' => 'sucess',
+        'message' => 'Ticket created successfully'
+    );
+
+      return $this->response->setStatusCode(Response::HTTP_CREATED)->setJSON($response);
+
+
     }
 
     /**
@@ -63,7 +84,30 @@ class TicketController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        $ticketModel = new \App\Models\Ticket();
+        $data = $this->request->getJSON();
+  
+        if(!$ticketModel -> validate($data)){
+          $response = array(
+              'status' => 'error',
+              'message' => $ticketModel->errors()
+          );
+  
+        //   return $this->response->setStatusCode(Response::HTTP_NOT_MODIFIED)->setJSON($response);
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+  
+        }
+  
+        $ticketModel->update($id, $data);
+        $response = array(
+          'status' => 'sucess',
+          'message' => 'Ticket updated successfully'
+      );
+  
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
+
+        
+
     }
 
     /**
@@ -73,6 +117,27 @@ class TicketController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+       
+        $ticketModel = new \App\Models\Ticket();
+        $data = $ticketModel->find($id);
+
+        if ($data){
+            $ticketModel->delete($id);
+            $response = array(
+                'status' => 'success',
+                'message' => 'Ticket deleted successfully'
+            );
+
+            return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
+        }
+
+        $response = array(
+            'status' => 'error',
+            'message' => "Record Not Found"
+        );
+
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+
+
     }
 }

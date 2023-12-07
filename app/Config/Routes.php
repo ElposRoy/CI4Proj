@@ -13,17 +13,22 @@ use CodeIgniter\Router\RouteCollection;
 
 
     $routes->get('/', 'Home::index');
+    
+    $routes->get('dashboard', 'DashboardController::index');
+
 
     $routes->resource('offices', 
     [
         'controller' => 'OfficeController', 
-        'except' => 'new,edit'
+        'except' => 'new,edit',
+        'filter' => 'auth'
     ]);
 
     $routes->resource('tickets', 
     [
         'controller' => 'TicketController', 
-        'except' => 'new,edit'
+        'except' => 'new,edit',
+        // 'filter' => 'auth'
     ]);
 
 

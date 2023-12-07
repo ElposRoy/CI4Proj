@@ -26,7 +26,12 @@ class OfficeController extends ResourceController
         $officeModel = new \App\Models\Office();
         $data = $officeModel->find($id);
         if (!$data){
-            return $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
+            $response = array(
+                'status' => 'error',
+                'message' => 'Data cannot be found'
+            );
+            return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+            // return $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
         }
         return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($data);
     }
@@ -88,7 +93,8 @@ class OfficeController extends ResourceController
               'message' => $officeModel->errors()
           );
   
-          return $this->response->setStatusCode(Response::HTTP_NOT_MODIFIED)->setJSON($response);
+        //   return $this->response->setStatusCode(Response::HTTP_NOT_MODIFIED)->setJSON($response);
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
   
         }
   
@@ -111,6 +117,27 @@ class OfficeController extends ResourceController
      */
     public function delete($id = null)
     {
-        //
+       
+        $officeModel = new \App\Models\Office();
+        $data = $officeModel->find($id);
+
+        if ($data){
+            $officeModel->delete($id);
+            $response = array(
+                'status' => 'success',
+                'message' => 'Office deleted successfully'
+            );
+
+            return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
+        }
+
+        $response = array(
+            'status' => 'error',
+            'message' => "Record Not Found"
+        );
+
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+
+
     }
 }
