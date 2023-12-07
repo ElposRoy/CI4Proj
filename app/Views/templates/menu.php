@@ -93,7 +93,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="<?= base_url('ticket')?>" class="nav-link">
+                <a href="<?= base_url('tickets')?>" class="nav-link">
                   <i class="fas fa-briefcase nav-icon"></i>
                   <p>Tickets</p>
                 </a>
