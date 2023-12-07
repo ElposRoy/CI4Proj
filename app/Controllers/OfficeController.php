@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
-
+use CodeIgniter\Http\Response;
 class OfficeController extends ResourceController
 {
     /**
@@ -23,17 +23,12 @@ class OfficeController extends ResourceController
      */
     public function show($id = null)
     {
-        //
-    }
-
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function new()
-    {
-        //
+        $officeModel = new \App\Models\Office();
+        $data = $officeModel->find($id);
+        if (!$data){
+            return $this->response->setStatusCode(Response::HTTP_NOT_FOUND);
+        }
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($data);
     }
 
     /**
@@ -43,7 +38,28 @@ class OfficeController extends ResourceController
      */
     public function create()
     {
-        //
+      $officeModel = new \App\Models\Office();
+      $data = $this->request->getPost();
+
+      if(!$officeModel -> validate($data)){
+        $response = array(
+            'status' => 'error',
+            'message' => $officeModel->errors()
+        );
+
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+
+      }
+
+      $officeModel->insert($data);
+      $response = array(
+        'status' => 'sucess',
+        'message' => 'Office created successfully'
+    );
+
+      return $this->response->setStatusCode(Response::HTTP_CREATED)->setJSON($response);
+
+
     }
 
     /**
@@ -63,7 +79,29 @@ class OfficeController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+        $officeModel = new \App\Models\Office();
+        $data = $this->request->getJSON();
+  
+        if(!$officeModel -> validate($data)){
+          $response = array(
+              'status' => 'error',
+              'message' => $officeModel->errors()
+          );
+  
+          return $this->response->setStatusCode(Response::HTTP_NOT_MODIFIED)->setJSON($response);
+  
+        }
+  
+        $officeModel->update($id, $data);
+        $response = array(
+          'status' => 'sucess',
+          'message' => 'Office updated successfully'
+      );
+  
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
+
+        
+
     }
 
     /**

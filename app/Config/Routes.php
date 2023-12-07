@@ -5,6 +5,26 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
 
-service('auth')->routes($routes);
+    $routes->setDefaultNamespace('App\Controllers');
+    $routes->setDefaultController('Home');
+    $routes->setTranslateURIDashes('index');
+    $routes->set404Override();
+
+
+    $routes->get('/', 'Home::index');
+
+    $routes->resource('offices', 
+    [
+        'controller' => 'OfficeController', 
+        'except' => 'new,edit'
+    ]);
+
+    $routes->resource('tickets', 
+    [
+        'controller' => 'TicketController', 
+        'except' => 'new,edit'
+    ]);
+
+
+    service('auth')->routes($routes);

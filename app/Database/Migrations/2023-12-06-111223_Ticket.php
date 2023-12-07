@@ -71,6 +71,7 @@ class Ticket extends Migration
 
         $this->forge->addField($fields);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addforeignKey('office_id', 'offices', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('tickets');
     }
 
