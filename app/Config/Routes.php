@@ -18,7 +18,17 @@ use CodeIgniter\Router\RouteCollection;
         $routes->get('dashboard', 'DashboardController::index', ['filter' => 'groupfilter:admin']);
 
         $routes->post('offices/list', 'OfficeController::list', ['filter' => 'groupfilter:admin']);
+        $routes->post('roles/list', 'RoleController::list', ['filter' => 'groupfilter:admin']);
+
         $routes->post('tickets/list', 'TicketController::list', ['filter' => 'auth']);
+
+
+        $routes->resource('roles', 
+        [
+            'controller' => 'RoleController', 
+            'except' => 'new,edit',
+            'filter' => 'groupfilter:admin'
+        ]);
 
 
     $routes->resource('offices', 
