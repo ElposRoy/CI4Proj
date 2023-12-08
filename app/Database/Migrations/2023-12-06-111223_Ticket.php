@@ -39,12 +39,12 @@ class Ticket extends Migration
 
             'state' => [
                 'type' => 'ENUM', // Define as ENUM type
-                'constraint' => ['pending', 'processing', 'resolved'], // Allowed values
+                'constraint' => ['PENDING', 'PROCESSING', 'RESOLVED'], // Allowed values
                 'null' => false,
             ],
             'severity' => [
                 'type' => 'ENUM', // Define as ENUM type
-                'constraint' => ['low', 'moderate', 'high', 'critical'], // Allowed values
+                'constraint' => ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], // Allowed values
                 'null' => false,
             ],
             'description' => [

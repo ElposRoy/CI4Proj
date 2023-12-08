@@ -13,15 +13,16 @@ class Ticket extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'office_id',
         'first_name',
         'last_name',
         'email',
+        'office_id',
         'state',
         'severity',
         'description',
-        'remarks',
+        'remarks'
     ];
+
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
@@ -30,23 +31,17 @@ class Ticket extends Model
     protected $deletedField  = 'deleted_at';
 
     // Validation
-    protected $validationRules = [
-        'office_id' => 'required|integer',
-        'first_name' => 'required|string|max_length[255]',
-        'last_name' => 'required|string|max_length[255]',
-        'email' => 'required|valid_email|max_length[255]',
-        'state' => 'required|in_list[pending,processing,resolved]',
-        'severity' => 'required|in_list[low,moderate,high,critical]',
-        'description' => 'required|string|max_length[255]',
-        'remarks' => 'required|string|max_length[255]',
+    protected $validationRules      = [
+        'first_name' => 'required|min_length[3]|max_length[255]',
+        'last_name' => 'required|min_length[3]|max_length[255]',
+        'email' => 'required|valid_email',
+        'office_id' => 'required',
+        'state' => 'required',
+        'severity' => 'required',
+        'description' => 'required|min_length[3]|max_length[255]'
     ];
-    
-    protected $validationMessages = [
-        'state.in_list' => 'The state field must be one of: pending, processing, resolved.',
-    ];
-    
-    protected $skipValidation = false; // Set to true if you want to skip validation when saving
-    
+    protected $validationMessages   = [];
+    protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
     // Callbacks
