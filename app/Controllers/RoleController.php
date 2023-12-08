@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use CodeIgniter\RESTful\ResourceController;
-
+use CodeIgniter\Http\Response;
 class RoleController extends ResourceController
 {
     /**
@@ -38,80 +38,58 @@ class RoleController extends ResourceController
         $sortdir = $postData['order'][0]['dir']; // asc or desc
         $sortcolumn = $postData['columns'][$sortby]['data']; // Column name
 
-        //total number of records
-        $totalRecords = $roleModel->select('id')->countAllResults();
+        // total number of records
+        $totalRecords = $roleModel->countAll();
 
-        //total number of records with filter
-        $totalRecordswithFilter = $roleModel->select('id')
-            ->join("users", "users.id = auth_groups_users.user_id")
+        // total number of records with filter
+        $totalRecordswithFilter = $roleModel
+            ->join("auth_groups_users", "users.id = auth_groups_users.user_id")
+            ->like('users.username', $searchValue)
+            ->orLike('users.active', $searchValue)
+            ->orLike('auth_groups_users.group', $searchValue)
+            ->countAllResults();
+
+        // fetch records
+        $records = $roleModel
+            ->select('users.*, auth_groups_users.group AS user_role')
+            ->join("auth_groups_users", "users.id = auth_groups_users.user_id")
             ->like('users.username', $searchValue)
             ->orLike('users.active', $searchValue)
             ->orLike('auth_groups_users.group', $searchValue)
             ->orderBy($sortcolumn, $sortdir)
-            ->countAllResults();
-
-        //fetch records
-        $records = $roleModel->select('users.*, CONCAT( users.username AS user_name) 
-        AS full_name, auth_groups_users.group AS user_role')
-        ->join("users", "users.id = auth_groups_users.user_id")
-        ->like('users.username', $searchValue)
-        ->orLike('users.active', $searchValue)
-        ->orLike('auth_groups_users.group', $searchValue)
-            ->orderBy($sortcolumn, $sortdir)
             ->findAll($rowperpage, $start);
 
-        $data = array();
+        $data = [];
 
         foreach ($records as $record) {
-            $data[] = array(
+            $data[] = [
                 "id" => $record['id'],
-                "username" => $record['user_name'],
+                "username" => $record['username'], // Assuming 'username' is a field in the 'users' table
                 "active" => $record['active'],
-                "last_active" => $record['last_active'],
-                "Role" => $record['user_role'],
+                "role" => $record['user_role'],
                 "created_at" => $record['created_at'],
-            );
+            ];
         }
 
-        $response = array(
+        $response = [
             "draw" => intval($draw),
             "recordsTotal" => $totalRecords,
             "recordsFiltered" => $totalRecordswithFilter,
             "data" => $data
-        );
+        ];
 
         return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
     }
 
 
 
-    // public function updateRole($userId, $newRole)
-    // {
-    //     // Get the Auth service
-    //     $auth = Services::auth();
 
-    //     // Find the user by ID
-    //     $user = $auth->getUser($userId);
+    public function updateRole($userId, $newRole)
+    {
+       
 
-    //     if (!$user) {
-    //         $response = [
-    //             'status'  => 'error',
-    //             'message' => 'User not found',
-    //         ];
-
-    //         return $this->response->setStatusCode(Response::HTTP_NOT_FOUND)->setJSON($response);
-    //     }
-
-    //     // Update the user's role
-    //     $auth->addUserToGroup($user->id, $newRole);
-
-    //     $response = [
-    //         'status'  => 'success',
-    //         'message' => 'User role updated successfully',
-    //     ];
-
-    //     return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
-    // }
+      
+    }
     /**
      * Return the properties of a resource object
      *
@@ -119,7 +97,24 @@ class RoleController extends ResourceController
      */
     public function show($id = null)
     {
-        //
+        $roleModel = new \App\Models\Role();
+        
+        // Fetch user data with associated role from auth_groups_users
+        $data = $roleModel
+            ->select('users.*, auth_groups_users.group AS role')
+            ->join("auth_groups_users", "users.id = auth_groups_users.user_id")
+            ->find($id);
+    
+        if (!$data) {
+            $response = [
+                'status' => 'error',
+                'message' => 'Data cannot be found'
+            ];
+    
+            return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+        }
+    
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($data);
     }
 
     /**
@@ -159,7 +154,31 @@ class RoleController extends ResourceController
      */
     public function update($id = null)
     {
-        //
+       
+        $authGroupUserModel = new \App\Models\AuthGroupUserModel();
+
+        $data = $this->request->getJSON();
+  
+        if(!$authGroupUserModel -> validate($data)){
+          $response = array(
+              'status' => 'error',
+              'message' => $authGroupUserModel->errors()
+          );
+  
+        //   return $this->response->setStatusCode(Response::HTTP_NOT_MODIFIED)->setJSON($response);
+        return $this->response->setStatusCode(Response::HTTP_BAD_REQUEST)->setJSON($response);
+  
+        }
+  
+        $authGroupUserModel->update($id, $data);
+        $response = array(
+          'status' => 'sucess',
+          'message' => 'Role updated successfully'
+      );
+  
+        return $this->response->setStatusCode(Response::HTTP_OK)->setJSON($response);
+
+        
     }
 
     /**

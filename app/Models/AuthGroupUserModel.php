@@ -6,14 +6,13 @@ use CodeIgniter\Model;
 
 class AuthGroupUserModel extends Model
 {
-    protected $table = 'auth_groups_users'; // Replace with your actual table name
-   
+    protected $table = 'auth_groups_users';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields = ['user_id', 'id']; // Add other fields as needed
+    protected $allowedFields = ['user_id', 'id', 'group']; 
 
     // Dates
     protected $useTimestamps = false;
